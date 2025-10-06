@@ -1,23 +1,20 @@
 .PHONY: all build run clean
 
-# Cible par défaut
+BIN_DIR=bin
+TARGET=$(BIN_DIR)/app
+SRC=modules.ml gene_alea.ml main.ml
+
 all: build
 
-# Compilation des modules communs
-modules: modules.ml gene_alea.ml
-	ocamlc -c modules.ml gene_alea.ml
+# Compilation et lien
+$(TARGET): $(SRC)
+    mkdir -p $(BIN_DIR)
+    ocamlc -o $(TARGET) $(SRC)
 
-# Binaire principal (utilise ptable.bin)
-app: modules main.ml
-	ocamlc -o app modules.cmo gene_alea.cmo main.ml
+build: $(TARGET)
 
-# Tout compiler
-build: app
+run: $(TARGET)
+    ./$(TARGET)
 
-# Exécuter le générateur
-run: app
-	./app
-
-# Nettoyage
 clean:
-	rm -f *.cmo *.cmi *.o app prepare
+    rm -f *.cmo *.cmi *.o $(TARGET)
