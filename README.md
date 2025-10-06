@@ -2,7 +2,7 @@
 
 ## 📖 Description
 Ce projet implémente un générateur de texte aléatoire en **OCaml**, avec une interface utilisateur en **Streamlit** 
-(que vous trouverez [ici](https://https://random-text-generation.streamlit.app/))
+(que vous trouverez [ici](https://random-text-generation.streamlit.app/))
 L’objectif est de produire des phrases pseudo‑naturelles à partir d’un corpus, en utilisant des **chaînes de Markov**.
 
 ---
