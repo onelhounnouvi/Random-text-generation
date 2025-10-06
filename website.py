@@ -70,7 +70,8 @@ with col2:
         st.session_state.current_text = "⏳ Generating..."
         try:
             proc = subprocess.run(
-                ["./app"],              # exécutable
+                ["./app"],   
+                cwd="bin",# exécutable
                 capture_output=True,
                 text=True,
                 timeout=10
