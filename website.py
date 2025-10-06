@@ -64,20 +64,33 @@ st.markdown(f"<div class='box'>{st.session_state.current_text}</div>", unsafe_al
 
 # Bouton centré
 st.markdown("<br>", unsafe_allow_html=True) #espace pour descendre
-col1, col2, col3 = st.columns([2, 2, 1])
+col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     if st.button("Generate"):
-        st.session_state.current_text = ""  # Vider immédiatement le cadran
+        st.session_state.current_text = "⏳ Generating..."
         try:
-            proc = subprocess.run(["./bin/app"], capture_output=True, text=True, timeout=10)
+            proc = subprocess.run(
+                ["./app"],              # exécutable
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
             if proc.returncode == 0:
-                st.session_state.current_text = proc.stdout.strip() or "(Le programme a renvoyé une sortie vide.)"
+                # stdout prioritaire
+                if proc.stdout.strip():
+                    st.session_state.current_text = proc.stdout.strip()
+                else:
+                    st.session_state.current_text = "(Le programme a renvoyé une sortie vide.)"
+            else:
+                # si code retour != 0, afficher stderr
+                st.session_state.current_text = f"[Erreur {proc.returncode}] {proc.stderr.strip()}"
         except FileNotFoundError:
-            st.session_state.current_text = "Erreur: './app' introuvable."
+            st.session_state.current_text = "Erreur: './bin/app' introuvable."
         except subprocess.TimeoutExpired:
             st.session_state.current_text = "Erreur: délai dépassé."
         except Exception as e:
             st.session_state.current_text = f"Erreur inattendue: {e}"
+
 
 # Footer
 st.markdown("""
