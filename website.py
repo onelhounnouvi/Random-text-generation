@@ -1,4 +1,3 @@
-import os
 import subprocess
 import streamlit as st
 
@@ -73,7 +72,7 @@ with col2:
     if st.button("Generate"):
         st.session_state.current_text = ""  # Vider immédiatement le cadran
         try:
-            proc = subprocess.run(["./bin/app"], capture_output=True, text=True, timeout=10)
+            proc = subprocess.run(["./bin/app"], cwd="bin"), capture_output=True, text=True, timeout=10)
             if proc.returncode == 0:
                 st.session_state.current_text = proc.stdout.strip() or "(Le programme a renvoyé une sortie vide.)"
         except FileNotFoundError:
