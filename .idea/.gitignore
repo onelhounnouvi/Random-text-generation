@@ -1,0 +1,11 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Fichiers générés par OCaml
+*.cm*
+*.o
+*.a
+
+# Exécutable
+bin/app
