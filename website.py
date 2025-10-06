@@ -1,4 +1,5 @@
 import subprocess
+import os
 import streamlit as st
 
 st.set_page_config(page_title="Random text generation", layout="centered")
@@ -53,6 +54,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Compiler
+if not os.path.exists("bin/app"):
+    subprocess.run(["make"], check=True)
+
 st.markdown("<h1 style='text-align: center;'>Random text generation</h1>", unsafe_allow_html=True)
 
 # Initialisation
@@ -64,34 +69,20 @@ st.markdown(f"<div class='box'>{st.session_state.current_text}</div>", unsafe_al
 
 # Bouton centré
 st.markdown("<br>", unsafe_allow_html=True) #espace pour descendre
-col1, col2, col3 = st.columns([1, 1, 1])
+col1, col2, col3 = st.columns([2, 2, 1])
 with col2:
     if st.button("Generate"):
-        st.session_state.current_text = "⏳ Generating..."
+        st.session_state.current_text = ""  # Vider immédiatement le cadran
         try:
-            proc = subprocess.run(
-                ["./app"],   
-                cwd="bin",# exécutable
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
+            proc = subprocess.run(["./bin/app"], cwd="bin", capture_output=True, text=True, timeout=10)
             if proc.returncode == 0:
-                # stdout prioritaire
-                if proc.stdout.strip():
-                    st.session_state.current_text = proc.stdout.strip()
-                else:
-                    st.session_state.current_text = "(Le programme a renvoyé une sortie vide.)"
-            else:
-                # si code retour != 0, afficher stderr
-                st.session_state.current_text = f"[Erreur {proc.returncode}] {proc.stderr.strip()}"
+                st.session_state.current_text = proc.stdout.strip() or "(Le programme a renvoyé une sortie vide.)"
         except FileNotFoundError:
-            st.session_state.current_text = "Erreur: './bin/app' introuvable."
+            st.session_state.current_text = "Erreur: './app' introuvable."
         except subprocess.TimeoutExpired:
             st.session_state.current_text = "Erreur: délai dépassé."
         except Exception as e:
             st.session_state.current_text = f"Erreur inattendue: {e}"
-
 
 # Footer
 st.markdown("""
