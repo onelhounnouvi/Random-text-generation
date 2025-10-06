@@ -5,7 +5,7 @@ let () =
   Random.self_init ();
 	
   (* 1. Lecture de la ptable depuis le fichier binaire*)
-  let ic = open_in_bin "ptable.bin" in
+  let ic = open_in_bin "bin/ptable.bin" in
   let sauce_ptable = Marshal.from_channel ic in
   close_in ic;
 
