@@ -1,6 +1,10 @@
+import os
 import subprocess
 import streamlit as st
 
+st.write("Current working directory:", os.getcwd())
+st.write("Files in cwd:", os.listdir())
+st.write("Files in bin:", os.listdir("bin"))
 st.set_page_config(page_title="Random text generation", layout="centered")
 
 # Style
