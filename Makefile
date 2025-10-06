@@ -8,13 +8,13 @@ all: build
 
 # Compilation et lien
 $(TARGET): $(SRC)
-    mkdir -p $(BIN_DIR)
-    ocamlc -o $(TARGET) $(SRC)
+<TAB>mkdir -p $(BIN_DIR)
+<TAB>ocamlc -o $(TARGET) $(SRC)
 
 build: $(TARGET)
 
 run: $(TARGET)
-    ./$(TARGET)
+<TAB>./$(TARGET)
 
 clean:
-    rm -f *.cmo *.cmi *.o $(TARGET)
+<TAB>rm -f *.cmo *.cmi *.o $(TARGET)
