@@ -39,10 +39,6 @@ Cloner le dépôt
 ```bash
 git clone hhttps://github.com/onelhounnouvi/Random-text-generation.git
 cd Random-text-generation
-```
-
-### Compilation
-```bash
 make
 ./bin/app
 ```
