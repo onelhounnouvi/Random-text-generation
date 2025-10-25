@@ -7,6 +7,15 @@ L’objectif est de produire des phrases pseudo‑naturelles à partir d’un co
 
 ---
 
+## 🧠 Chaînes de Markov
+Une chaîne de Markov est un modèle probabiliste où l’état suivant dépend uniquement de l’état courant.  
+Dans ce projet :
+- Les **états** sont les mots (ou séquences de mots).
+- Les **transitions** sont les probabilités de passer d’un mot à un autre.
+- La génération simule un parcours aléatoire de `START` à `STOP`.
+
+---
+
 ## ⚙️ Approches implémentées
 
 ### 1. Listes de successeurs (Part A)
@@ -21,15 +30,6 @@ L’objectif est de produire des phrases pseudo‑naturelles à partir d’un co
 - On généralise avec des préfixes des **n‑grammes** (préfixes de longueur `n`).
 - Chaque mot dépend des n mots précédents.
 - Plus `n` est grand, plus le texte est cohérent.
-
----
-
-## 🧠 Chaînes de Markov
-Une chaîne de Markov est un modèle probabiliste où l’état suivant dépend uniquement de l’état courant.  
-Dans ce projet :
-- Les **états** sont les mots (ou séquences de mots).
-- Les **transitions** sont les probabilités de passer d’un mot à un autre.
-- La génération simule un parcours aléatoire de `START` à `STOP`.
 
 ---
 
