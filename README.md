@@ -1,13 +1,13 @@
 # Random Text Generation with Markov Chains
 
-## 📖 Description
+## Description
 Ce projet implémente un générateur de texte aléatoire en **OCaml**, avec une interface utilisateur en **Streamlit** 
 (que vous trouverez [ici](https://random-text-generation.streamlit.app/))
 L’objectif est de produire des phrases pseudo‑naturelles à partir d’un corpus, en utilisant des **chaînes de Markov**.
 
 ---
 
-## 🧠 Chaînes de Markov
+## Chaînes de Markov
 Une chaîne de Markov est un modèle probabiliste où l’état suivant dépend uniquement de l’état courant.  
 Dans ce projet :
 - Les **états** sont les mots (ou séquences de mots).
@@ -16,7 +16,7 @@ Dans ce projet :
 
 ---
 
-## ⚙️ Approches implémentées
+## Approches implémentées
 
 ### 1. Listes de successeurs (Part A)
 - On construit une table de successeurs : chaque mot est associé à la liste des mots qui peuvent le suivre.
@@ -33,7 +33,7 @@ Dans ce projet :
 
 ---
 
-## 🚀 Utilisation
+## Utilisation
 
 Cloner le dépôt
 ```bash
@@ -43,8 +43,8 @@ make
 ./bin/app
 ```
 
-## 📚 Corpus
+## Corpus
 - Les textes par défaut proviennent de **[Projet Gutenberg](https://www.gutenberg.org/)**, une bibliothèque numérique de livres du domaine public.  
-- Si vous souhaitez utiliser **vos propres livres ou corpus**, il faut :
+- Si vous souhaitez utiliser **vos propres livres**, il faut :
   1. Placer les fichiers textes dans un dossier books.
   2. Modifier le `Makefile` pour compiler également `prepare.ml`
