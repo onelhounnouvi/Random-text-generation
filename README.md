@@ -33,18 +33,5 @@ Dans ce projet :
 
 ---
 
-## Utilisation
-
-Cloner le dépôt
-```bash
-git clone hhttps://github.com/onelhounnouvi/Random-text-generation.git
-cd Random-text-generation
-make
-./bin/app
-```
-
 ## Corpus
 - Les textes par défaut proviennent de **[Projet Gutenberg](https://www.gutenberg.org/)**, une bibliothèque numérique de livres du domaine public.  
-- Si vous souhaitez utiliser **vos propres livres**, il faut :
-  1. Placer les fichiers textes dans un dossier books.
-  2. Modifier le `Makefile` pour compiler également `prepare.ml`
