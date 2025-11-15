@@ -64,30 +64,57 @@ st.markdown("<h1 style='text-align: center;'>Random text generation</h1>", unsaf
 if "current_text" not in st.session_state:
     st.session_state.current_text = ""
 
+# Sidebar pour les paramètres
+with st.sidebar:
+    st.markdown("### ⚙️ Parameters")
+    
+    n_gram = st.select_slider(
+        "N-gram order",
+        options=[2, 3, 4],
+        value=3,
+        help="Higher = more coherent"
+    )
+    
+    num_sentences = st.slider(
+        "Number of sentences",
+        min_value=1,
+        max_value=10,
+        value=3,
+        help="How many sentences to generate"
+    )
+    
+    st.markdown("---")
+    st.caption("💡 Tip: Try n-gram=3 for better results!")
+
+
 # Cadran d'affichage
 st.markdown(f"<div class='box'>{st.session_state.current_text}</div>", unsafe_allow_html=True)
 
 # Bouton centré
 st.markdown("<br>", unsafe_allow_html=True) #espace pour descendre
 col1, col2, col3 = st.columns([2, 2, 1])
+
 with col2:
     if st.button("Generate"):
-        st.session_state.current_text = ""  # Vider immédiatement le cadran
         try:
-            proc = subprocess.run(["./bin/app"], capture_output=True, text=True, timeout=10)
+            proc = subprocess.run(["./bin/app", str(n_gram), str(num_sentences)], capture_output=True, text=True, timeout=10)
             if proc.returncode == 0:
                 st.session_state.current_text = proc.stdout.strip() or "(Le programme a renvoyé une sortie vide.)"
+            else:
+                st.session_state.current_text = f"Erreur: {proc.stderr.strip()}"
         except FileNotFoundError:
             st.session_state.current_text = "Erreur: './app' introuvable."
         except subprocess.TimeoutExpired:
             st.session_state.current_text = "Erreur: délai dépassé."
         except Exception as e:
             st.session_state.current_text = f"Erreur inattendue: {e}"
-
+        
+        # Force le rafraîchissement
+        st.rerun()
 # Footer
 st.markdown("""
 <div class='footer'>
 ✨ Words born from chaos — enjoy the nonsense ✨<br>
-For the first time, double click on the generate button. Sorry for the inconvenience. Working on it
+This is not an LLM — no semantics, no meaning, just probability and statistical patterns
 </div>
 """, unsafe_allow_html=True)

@@ -1,6 +1,6 @@
 open Modules
 
-(* -- Part A -------------------------------------------------------------- *)
+(* -- Part A : Liste de successeurs et choix aléatoire ------------------------*)
 
 let is_letter (c : char) : bool =
   ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
@@ -50,7 +50,7 @@ let walk_ltable table =
   loop "START" []
   
 
-(* -- Part B -------------------------------------------------------------- *)
+(* -- Part B : Distributions pondérées des successeurs------------------------ *)
 
 let compute_distribution l = 
   {total = List.length l; 
@@ -120,50 +120,54 @@ let walk_stable table =
   loop "START" []
 
     
-(* -- Part C -------------------------------------------------------------- *)
+(* -- Part C : Chaînes Markoviennes-------------------------------------*)
 
-let is_in_word(c : char) : bool =
-  (is_letter c) || ('0' <= c && c <= '9') || ('\128' <= c && c <= '\255')
+(* Prédicats pour classifier les caractères *)
+let is_whitespace c = 
+  c = ' ' || c = '\t' || c = '\r' || c = '\n'
 
-let is_word (c : char) : bool =
-  List.mem c [';'; ','; ':'; '-'; '"'; '\''; '?'; '!'; '.']
-    
 let end_sentence (c : char) : bool =
   List.mem c ['?'; '!'; '.']
-    
-    
+
+let is_abbreviation (mot : string) : bool =
+  let abbrevs = ["Mrs."; "Mr."; "Dr."; "Ms."; "Prof."; "Sr."; "Jr."; "St."] in
+  List.mem mot abbrevs
+  
+(* Fonction principale de tokenisation *)
 let sentences (str : string) : string list list =
   let len = String.length str in
   let rec loop idx mot phrase acc =
     if idx = len then
-      (*A la fin de la phrase, on vérifie qu'il n'y a ni phrase ni mot vides*)
-      if mot = "" && phrase = [] then List.rev acc
-      else List.rev ((List.rev (if mot = "" then phrase else mot::phrase))::acc)
+      (* Fin du texte : finaliser le mot et la phrase en cours *)
+      let final_phrase = 
+        if mot <> "" then List.rev (mot :: phrase)
+        else List.rev phrase
+      in
+      if final_phrase = [] then List.rev acc
+      else List.rev (final_phrase :: acc)
     else
       let c = str.[idx] in
-      if end_sentence c then
-        (*Si on est à la fin d'une phrase, on ajoute la liste construite 
-          + le mot courant (si non vide) à phrase*)
-        let s = String.make 1 c in
-        let new_phrase = if mot = "" then s::phrase else s::mot::phrase in
-        loop (idx + 1) "" [] (List.rev new_phrase::acc)
-      else if is_word c then
-        (*Si c'est un mot, on l'ajoute à la phrase*)
-        let s = String.make 1 c in
-        let new_phrase = if mot = "" then s::phrase else s::mot::phrase in
-        loop (idx + 1) "" new_phrase acc
-      else if is_in_word c then
-        (*Si c'est une lettre, on l'ajoute au mot*)
-        let s = String.make 1 c in
-        loop (idx + 1) (mot ^ s) phrase acc
+      if is_whitespace c then
+        (* Espace : finaliser le mot courant *)
+        if mot = "" then
+          (* Mot vide, on continue *)
+          loop (idx + 1) "" phrase acc
+        else if end_sentence mot.[String.length mot - 1] then
+          if is_abbreviation mot then
+			(* Ce n'est pas une vraie fin de phrase *)
+			loop (idx + 1) "" (mot :: phrase) acc
+		  else
+            (* Le mot se termine par une ponctuation de fin de phrase *)
+            let final_phrase = List.rev (mot :: phrase) in
+            loop (idx + 1) "" [] (final_phrase :: acc)
+        else
+          (* Le mot continue dans la phrase *)
+          loop (idx + 1) "" (mot :: phrase) acc
       else
-        (*Sinon, c'est un séparateur, on ajoute donc le mot courant 
-        à phrase s'il est non vide*)
-        let new_phrase = if mot = "" then phrase else mot::phrase in
-        loop (idx + 1) "" new_phrase acc
+        (* Caractère normal : ajouter au mot courant *)
+        loop (idx + 1) (mot ^ String.make 1 c) phrase acc
   in
   loop 0 "" [] []
-
     
 let rec start pl =
   match pl with
@@ -211,26 +215,25 @@ let build_ptable (words : string list) (pl : int) : ptable =
   { prefix_length = pl; table = tablef }
   
   
-let walk_ptable { table; prefix_length = pl } : string list =
-  (*Probabilité de relancer la fonction pour avoir plusieurs phrases*)
-  let p_continue = 0.7 in
-  
-  let rec aux prefix acc =
-    match PTable.find_opt prefix table with
-    | None -> List.rev acc (*Table vide -> renvoie le paragraphe construit*)
-    | Some dist ->
-        let w = tirage_pondere dist in (*On tire un mot suivant aléatoire*)
-        if w = "STOP" then 
-          if Random.float 1.0 < p_continue then    
-            (*on repart sur un préfixe [START,…]*)
-            aux (start pl) acc
-          else
-            (* on arrête vraiment *)
-            List.rev acc
-        else aux (shift prefix w) (w::acc)
-  in
-  aux (start pl) []
+let walk_ptable { table; prefix_length = pl } (num_sentences : int) : string list =
 
+  let rec aux prefix sentence_count acc =
+  	(* Vérifier si on a généré assez de phrases *)
+    if sentence_count >= num_sentences then 
+    	List.rev acc
+    else
+		match PTable.find_opt prefix table with
+		| None -> List.rev acc (*Table vide -> renvoie le paragraphe construit*)
+		| Some dist ->
+			let w = tirage_pondere dist in (*On tire un mot suivant aléatoire*)
+			if w = "STOP" then 
+				(* On a terminé une phrase, on incrémente le compteur *)
+				aux (start pl) (sentence_count + 1) acc
+			else 
+				(* On continue à construire la phrase courante *)
+				aux (shift prefix w) sentence_count (w::acc) 
+	in
+	aux (start pl) 0 []
 
 exception Prefix_length_mismatch 
                                  
@@ -257,7 +260,7 @@ let merge_tables : distribution PTable.t -> distribution PTable.t -> distributio
       | None, None -> None
       | Some d, None | None, Some d  -> Some d
       | Some d1, Some d2 -> Some (merge_dist d1 d2)
-    )
+      )
     
   
 let merge_ptables (tl : ptable list) : ptable =

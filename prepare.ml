@@ -1,5 +1,6 @@
 open Modules
 open Gene_alea
+let n_gram = 3
 
 let string_of_file filename =
 	(* ouvre le canal en lecture *)
@@ -20,16 +21,17 @@ let () =
     |> List.map (Filename.concat "books")
   in
 
-  (* 2. Construit une ptable par fichier *)
-  let ptables =
-    List.map (fun f ->
-      let phrases = sentences (string_of_file f) in
-      merge_ptables (List.map (fun s -> build_ptable s 2) phrases)
-    ) files
+  (* 2. Concatène le contenu de tous les fichiers en une seule grande chaîne *)
+  let big_text =
+    List.map string_of_file files
+    |> String.concat " "
   in
 
-  (* 3. Fusionne toutes les ptables en une seule *)
-  let sauce_ptable = merge_ptables ptables in
+  (* 3. Découpe en phrases et construit une unique ptable *)
+  let phrases = sentences big_text in
+  let sauce_ptable =
+    merge_ptables (List.map (fun s -> build_ptable s n_gram) phrases)
+  in
   
   (* 4. Sauvegarde binaire *)
   let oc = open_out_bin "ptable.bin" in
