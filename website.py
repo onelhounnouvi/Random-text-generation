@@ -115,6 +115,7 @@ with col2:
 st.markdown("""
 <div class='footer'>
 ✨ Words born from chaos — enjoy the nonsense ✨<br>
+Based on 19th century English novels<br>
 This is not an LLM — no semantics, no meaning, just probability and statistical patterns
 </div>
 """, unsafe_allow_html=True)
