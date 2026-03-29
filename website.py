@@ -66,7 +66,7 @@ if "current_text" not in st.session_state:
 
 # Sidebar pour les paramètres
 with st.sidebar:
-    st.markdown("### ⚙️ Parameters")
+    st.markdown("### Parameters")
     
     n_gram = st.select_slider(
         "N-gram order",
